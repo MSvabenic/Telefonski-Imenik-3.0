@@ -10,6 +10,7 @@ using TelefonskiImenik.Models;
 
 namespace TelefonskiImenik.Controllers.API
 {
+    [Authorize]
     public class KontaktController : ApiController
     {
         /*---------------------------------------------------------------------------------------------------*/
@@ -23,7 +24,7 @@ namespace TelefonskiImenik.Controllers.API
         /*---------------------------------------------------------------------------------------------------*/
         [Route("api/Kontakt/GetBroj/{id}")]
         [HttpGet]
-        public IHttpActionResult GetBroj([FromUri]int id)
+        public IHttpActionResult GetBroj([FromUri] int id)
         {
             var broj = (from brojevi in _context.BrojeviOsobe
                         join brojtip in _context.BrojTipovi on brojevi.BrojTipId equals brojtip.BrojTipId
@@ -35,31 +36,19 @@ namespace TelefonskiImenik.Controllers.API
                             OpisBroja = brojevi.Opis
                         }).ToList();
 
-            if (broj != null)
-            {
-                return Ok(broj);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok(broj);
         }
 
         /*---------------------------------------------------------------------------------------------------*/
 
         [Route("api/Kontakt/GetOsobaSlika/{id}")]
         [HttpGet]
-        public IHttpActionResult GetOsobaSlika(int id)
+        public IHttpActionResult GetOsobaSlika([FromUri] int id)
         {
             var osoba = _context.Osobe.Where(x => x.OsobaId == id).Select(x => new { x.Slika }).ToList();
-            if (osoba != null)
-            {
-                return Ok(osoba);
-            }
-            else
-            {
-                return BadRequest();
-            }
+
+            return Ok(osoba);
+
         }
 
         /*---------------------------------------------------------------------------------------------------*/
@@ -78,16 +67,16 @@ namespace TelefonskiImenik.Controllers.API
                              };
 
             var osoba = from brojevi in svibrojevi
-                join osobe in _context.Osobe on brojevi.OsobaId equals osobe.OsobaId
+                        join osobe in _context.Osobe on brojevi.OsobaId equals osobe.OsobaId
                         where userId == osobe.UserId
                         select new
-                {
-                    OsobaId = osobe.OsobaId,
-                    Ime = osobe.Ime,
-                    Prezime = osobe.Prezime,
-                    Grad = osobe.Grad,
-                    Broj = brojevi.Broj,
-                };
+                        {
+                            OsobaId = osobe.OsobaId,
+                            Ime = osobe.Ime,
+                            Prezime = osobe.Prezime,
+                            Grad = osobe.Grad,
+                            Broj = brojevi.Broj,
+                        };
 
             return Ok(osoba);
         }
@@ -95,17 +84,14 @@ namespace TelefonskiImenik.Controllers.API
         /*---------------------------------------------------------------------------------------------------*/
         [Route("api/Kontakt/GetOsoba/{id}")]
         [HttpGet]
-        public IHttpActionResult GetOsoba(int id)
+        public IHttpActionResult GetOsoba([FromUri] int id)
         {
-            var osoba = _context.Osobe.Where(x => x.OsobaId == id).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
-            if (osoba != null)
-            {
-                return Ok(osoba);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var userId = User.Identity.GetUserId();
+
+            var osoba = _context.Osobe.Where(x => x.OsobaId == id && x.UserId == userId).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
+
+            return Ok(osoba);
+
         }
 
         /*---------------------------------------------------------------------------------------------------*/
