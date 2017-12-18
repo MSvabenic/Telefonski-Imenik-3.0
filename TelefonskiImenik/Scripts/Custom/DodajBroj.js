@@ -1,4 +1,39 @@
 ﻿$(document).ready(function () {
+
+    $.getJSON("/api/Kontakt/GetTipBroj",
+        function (data) {
+            var lista = $('#brojTipId');
+            lista.empty();
+            $(function () {
+                $("#brojTipId").prepend("<option value='' selected='selected'></option>");
+            });
+            $(data).each(function () {
+                lista.append(
+                    $('<option>',
+                        {
+                            value: this.BrojTipId
+                        }).html(this.Naziv)
+                );
+            });
+        });
+
+    $.getJSON("/api/Kontakt/GetOsoba",
+        function (data) {
+            var lista = $('#osobaId');
+            lista.empty();
+            $(function () {
+                $("#osobaId").prepend("<option value='' selected='selected'></option>");
+            });
+            $(data).each(function () {
+                lista.append(
+                    $('<option>',
+                        {
+                            value: this.OsobaId
+                        }).html(this.Ime + " " + this.Prezime)
+                );
+            });
+        });
+
     $("#forma1").submit(function (e) {
         var broj = new Object();
         broj.OsobaId = $("#osobaId").val();

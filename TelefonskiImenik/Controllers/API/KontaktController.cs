@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,11 +9,12 @@ using TelefonskiImenik.Models;
 
 namespace TelefonskiImenik.Controllers.API
 {
-    [Authorize]
     public class KontaktController : ApiController
     {
         /*---------------------------------------------------------------------------------------------------*/
-        private ApplicationDbContext _context;
+
+        private readonly ApplicationDbContext _context;
+
         /*---------------------------------------------------------------------------------------------------*/
         public KontaktController()
         {
@@ -22,9 +22,35 @@ namespace TelefonskiImenik.Controllers.API
         }
 
         /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja vraća podatke koji pune dropdown za osobu na view-u DodajBroj
+        [Route("api/Kontakt/GetOsoba")]
+        [HttpGet]
+        public IHttpActionResult GetOsoba()
+        {
+            var osoba = _context.Osobe.Select(x => new { x.OsobaId, x.Ime, x.Prezime }).ToList();
+
+            return Ok(osoba);
+        }
+
+        /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja vraća podatke koji pune dropdown za tip broja na view-u DodajBroj
+        [Route("api/Kontakt/GetTipBroj")]
+        [HttpGet]
+        public IHttpActionResult GetTipBroj()
+        {
+            var tipBroj = _context.BrojTipovi.ToList();
+
+            return Ok(tipBroj);
+        }
+
+        /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja vraća podatke za tablicu svih brojeva osobe na view-u DetaljiKontakta
         [Route("api/Kontakt/GetBroj/{id}")]
         [HttpGet]
-        public IHttpActionResult GetBroj([FromUri] int id)
+        public IHttpActionResult GetBroj([FromUri]int id)
         {
             var broj = (from brojevi in _context.BrojeviOsobe
                         join brojtip in _context.BrojTipovi on brojevi.BrojTipId equals brojtip.BrojTipId
@@ -36,28 +62,29 @@ namespace TelefonskiImenik.Controllers.API
                             OpisBroja = brojevi.Opis
                         }).ToList();
 
+
             return Ok(broj);
         }
 
         /*---------------------------------------------------------------------------------------------------*/
 
+        //metoda koja vraća podatke za sliku osobe na view-u DetaljiKontakta
         [Route("api/Kontakt/GetOsobaSlika/{id}")]
         [HttpGet]
-        public IHttpActionResult GetOsobaSlika([FromUri] int id)
+        public IHttpActionResult GetOsobaSlika(int id)
         {
             var osoba = _context.Osobe.Where(x => x.OsobaId == id).Select(x => new { x.Slika }).ToList();
 
             return Ok(osoba);
-
         }
 
         /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja vraća podatke za punjenje jQuery datatables tablice na view-u SviKontakti
         [Route("api/Kontakt/GetOsobe")]
         [HttpGet]
         public IHttpActionResult GetOsobe()
         {
-            var userId = User.Identity.GetUserId();
-
             var svibrojevi = from bro in _context.BrojeviOsobe.ToList()
                              group bro by bro.OsobaId into g
                              select new
@@ -68,33 +95,33 @@ namespace TelefonskiImenik.Controllers.API
 
             var osoba = from brojevi in svibrojevi
                         join osobe in _context.Osobe on brojevi.OsobaId equals osobe.OsobaId
-                        where userId == osobe.UserId
                         select new
                         {
                             OsobaId = osobe.OsobaId,
                             Ime = osobe.Ime,
                             Prezime = osobe.Prezime,
                             Grad = osobe.Grad,
-                            Broj = brojevi.Broj,
+                            Broj = brojevi.Broj
                         };
 
             return Ok(osoba);
         }
 
         /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja vraća podatke za osobu za punjenje liste na view-u DetaljiKontakta
         [Route("api/Kontakt/GetOsoba/{id}")]
         [HttpGet]
-        public IHttpActionResult GetOsoba([FromUri] int id)
+        public IHttpActionResult GetOsoba(int id)
         {
-            var userId = User.Identity.GetUserId();
-
-            var osoba = _context.Osobe.Where(x => x.OsobaId == id && x.UserId == userId).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
+            var osoba = _context.Osobe.Where(x => x.OsobaId == id).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
 
             return Ok(osoba);
-
         }
 
         /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja sprema podatke broj osobe na view-u DodajBroj
         [Route("api/Kontakt/DodajBroj")]
         [HttpPost]
         public IHttpActionResult DodajBroj([FromBody]BrojeviOsoba broj)
@@ -113,6 +140,8 @@ namespace TelefonskiImenik.Controllers.API
         }
 
         /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja sprema podatke osobe na view-u DodajBroj
         [Route("api/Kontakt/DodajOsobu")]
         [HttpPost]
         public IHttpActionResult DodajOsobu([FromBody]Osoba osoba)
