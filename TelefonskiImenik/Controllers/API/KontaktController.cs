@@ -5,15 +5,18 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Script.Serialization;
+using Microsoft.AspNet.Identity;
 using TelefonskiImenik.Models;
 
 namespace TelefonskiImenik.Controllers.API
 {
+    [Authorize]
     public class KontaktController : ApiController
     {
         /*---------------------------------------------------------------------------------------------------*/
 
         private readonly ApplicationDbContext _context;
+       
 
         /*---------------------------------------------------------------------------------------------------*/
         public KontaktController()
@@ -28,7 +31,9 @@ namespace TelefonskiImenik.Controllers.API
         [HttpGet]
         public IHttpActionResult GetOsoba()
         {
-            var osoba = _context.Osobe.Select(x => new { x.OsobaId, x.Ime, x.Prezime }).ToList();
+            var UserId = User.Identity.GetUserId();
+
+            var osoba = _context.Osobe.Where(x => x.UserId == UserId).Select(x => new { x.OsobaId, x.Ime, x.Prezime }).ToList();
 
             return Ok(osoba);
         }
@@ -85,6 +90,8 @@ namespace TelefonskiImenik.Controllers.API
         [HttpGet]
         public IHttpActionResult GetOsobe()
         {
+            var UserId = User.Identity.GetUserId();
+
             var svibrojevi = from bro in _context.BrojeviOsobe.ToList()
                              group bro by bro.OsobaId into g
                              select new
@@ -95,6 +102,7 @@ namespace TelefonskiImenik.Controllers.API
 
             var osoba = from brojevi in svibrojevi
                         join osobe in _context.Osobe on brojevi.OsobaId equals osobe.OsobaId
+                        where UserId == osobe.UserId
                         select new
                         {
                             OsobaId = osobe.OsobaId,
@@ -114,7 +122,9 @@ namespace TelefonskiImenik.Controllers.API
         [HttpGet]
         public IHttpActionResult GetOsoba(int id)
         {
-            var osoba = _context.Osobe.Where(x => x.OsobaId == id).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
+            var UserId = User.Identity.GetUserId();
+
+            var osoba = _context.Osobe.Where(x => x.OsobaId == id && x.UserId == UserId).Select(x => new { x.Ime, x.Prezime, x.Grad, x.Opis }).ToList();
 
             return Ok(osoba);
         }
@@ -156,6 +166,28 @@ namespace TelefonskiImenik.Controllers.API
             else
             {
                 return BadRequest(ModelState);
+            }
+        }
+
+        /*---------------------------------------------------------------------------------------------------*/
+
+        //metoda koja brise zapis iz baze prema id-u osobe
+        [Route("api/Kontakt/IzbrisiOsobu/{id}")]
+        [HttpDelete]
+        public IHttpActionResult IzbrisiOsobu([FromUri] int id)
+        {
+            var osoba = _context.Osobe.Where(x => x.OsobaId == id).FirstOrDefault();
+
+            if (id <= 0 )
+            {
+                
+                return BadRequest();
+            }
+            else
+            {
+                _context.Osobe.Remove(osoba);
+                _context.SaveChanges();
+                return Ok(osoba);
             }
         }
     }
