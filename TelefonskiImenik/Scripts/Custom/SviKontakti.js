@@ -49,10 +49,10 @@
                     type: "DELETE"
                 }).done(function () {
                     alert('Uspješno Izbrisano!'),
-                        window.setTimeout(window.location.reload.bind(window.location), 300);
+                    setTimeout(window.location.reload.bind(window.location), 300);
                 }).fail(function () {
                     alert('Nešto je pošlo po krivu, molim pokušaj ponovno!'),
-                        window.setTimeout(window.location.reload.bind(window.location), 300);
+                    setTimeout(window.location.reload.bind(window.location), 300);
                 });
             });
         });

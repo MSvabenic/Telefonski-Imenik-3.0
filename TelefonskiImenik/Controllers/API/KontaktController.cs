@@ -176,7 +176,9 @@ namespace TelefonskiImenik.Controllers.API
         [HttpDelete]
         public IHttpActionResult IzbrisiOsobu([FromUri] int id)
         {
-            var osoba = _context.Osobe.Where(x => x.OsobaId == id).FirstOrDefault();
+            var UserId = User.Identity.GetUserId();
+
+            var osoba = _context.Osobe.Where(x => x.OsobaId == id && x.UserId == UserId).FirstOrDefault();
 
             if (id <= 0 )
             {

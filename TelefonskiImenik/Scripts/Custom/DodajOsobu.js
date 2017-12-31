@@ -20,10 +20,10 @@
             data: JSON.stringify(osoba)  
         }).done(function () {
             alert('Uspješno spremljeno!'),
-                window.location.href = "/KontaktMVC/DodajBroj";
+            window.location.href = "/KontaktMVC/DodajBroj";
         }).fail(function () {
             alert('Nešto je pošlo po krivu, molim pokušaj ponovno!'),
-                window.setTimeout(window.location.reload.bind(window.location), 300);
+            setTimeout(window.location.reload.bind(window.location), 300);
         });
         e.preventDefault();
     });
