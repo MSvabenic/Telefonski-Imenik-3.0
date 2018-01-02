@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using TelefonskiImenik.Models;
 
-namespace TelefonskiImenik.Models
+namespace TelefonskiImenik.DataLayer
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {

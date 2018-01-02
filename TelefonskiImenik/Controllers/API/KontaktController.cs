@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Script.Serialization;
 using Microsoft.AspNet.Identity;
+using TelefonskiImenik.DataLayer;
 using TelefonskiImenik.Models;
 
 namespace TelefonskiImenik.Controllers.API
