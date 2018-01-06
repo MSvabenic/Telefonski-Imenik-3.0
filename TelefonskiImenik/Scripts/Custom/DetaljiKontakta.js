@@ -1,5 +1,4 @@
 ﻿var url = location.pathname.split('/')[3]; // uzima id iz URL-a da ga može proslijediti u getJSON kao varijablu.
-var slika;
 var dataSlika;
 
 $(document).ready(function () {
@@ -32,7 +31,7 @@ $(document).ready(function () {
 $(document).ready(function () {
     $.getJSON("/api/Kontakt/GetOsobaSlika/id", { id: url },
         function (json) {
-            data = json[0].Slika;
+            dataSlika = json[0].Slika;
             $('#slika').html('<img src="data:image/jpeg;base64,' + dataSlika + '" class="img-thumbnail" width="250" />');
         });
 });

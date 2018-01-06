@@ -12,13 +12,9 @@ namespace Models.ViewModels
         [Required(ErrorMessage = "Obvezno je odabrati osobu.")]
         public int OsobaId { get; set; }
 
-        public IEnumerable<Osoba> Osobe { get; set; }
-
         [DisplayName("Tip broja telefona")]
         [Required(ErrorMessage ="Tip broja je obvezan za unos.")]
         public int BrojTip { get; set; }
-
-        public IEnumerable<BrojTip> TipBroja { get; set; }
 
         [RegularExpression("([0-9]+)", ErrorMessage = "Dozvoljeni su samo brojevi!")]
         [Required(ErrorMessage = "Broj je obvezan za unos.")]
